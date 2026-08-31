@@ -101,7 +101,7 @@ class LmfCodec {
     }
     final compressedLen = _readU64le(data, 18);
 
-    final start = headerSize;
+    const start = headerSize;
     final end = start + compressedLen;
     if (data.length < end) {
       throw LmfFormatException('Файл обрезан');

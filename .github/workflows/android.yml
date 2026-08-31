@@ -35,7 +35,9 @@ jobs:
         run: flutter pub get
 
       - name: Generate platform scaffolding (android/)
-        run: flutter create --platforms=android --project-name lmf_app .
+        run: |
+          flutter create --platforms=android --project-name lmf_app .
+          rm -rf test
 
       - name: Analyze
         run: flutter analyze

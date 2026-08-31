@@ -46,6 +46,7 @@ Zlib выбран потому, что он совместим "из короб�
 cd android_app
 flutter pub get
 flutter create --platforms=android --project-name lmf_app .   # один раз: добавляет android/
+rm -rf test   # шаблонный тест ссылается на MyApp/flutter_test, у нас его нет
 flutter run          # или flutter build apk
 ```
 
