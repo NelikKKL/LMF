@@ -45,8 +45,14 @@ Zlib выбран потому, что он совместим "из короб�
 ```
 cd android_app
 flutter pub get
+flutter create --platforms=android --project-name lmf_app .   # один раз: добавляет android/
 flutter run          # или flutter build apk
 ```
+
+> В репозитории нет папки `android/` — она генерируется командой
+> `flutter create` (в CI это делается автоматически). Один раз
+> сгенерировав её локально, можно закоммитить в репозиторий, чтобы
+> не пересоздавать каждый раз.
 
 ## Web-ридер (Rust → WebAssembly)
 

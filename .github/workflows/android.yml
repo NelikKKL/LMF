@@ -34,6 +34,9 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Generate platform scaffolding (android/)
+        run: flutter create --platforms=android --project-name lmf_app .
+
       - name: Analyze
         run: flutter analyze
 
