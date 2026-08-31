@@ -18,6 +18,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool _busy = false;
+  double _progress = 0;
+  String _stage = '';
 
   // Extracts the trailing integer in a filename (before the extension),
   // e.g. "photo_12.png" -> 12. Falls back to 0 if none is found, so files
@@ -40,12 +42,25 @@ class _HomeScreenState extends State<HomeScreen> {
     final sorted = [...files];
     sorted.sort((a, b) => _trailingNumber(a.name).compareTo(_trailingNumber(b.name)));
 
-    setState(() => _busy = true);
+    setState(() {
+      _busy = true;
+      _progress = 0;
+      _stage = 'Подготовка…';
+    });
     try {
       final bytesList = <Uint8List>[
         for (final f in sorted) await f.readAsBytes(),
       ];
-      final lmfBytes = LmfCodec.encode(bytesList);
+      final lmfBytes = await LmfCodec.encode(
+        bytesList,
+        onProgress: (progress, stage) {
+          if (!mounted) return;
+          setState(() {
+            _progress = progress;
+            _stage = stage;
+          });
+        },
+      );
 
       final dir = await getTemporaryDirectory();
       final outFile = File('${dir.path}/output.lmf');
@@ -113,7 +128,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 if (_busy) ...[
                   const SizedBox(height: 32),
-                  const CircularProgressIndicator(),
+                  SizedBox(
+                    width: 220,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: LinearProgressIndicator(
+                        value: _progress == 0 ? null : _progress,
+                        minHeight: 6,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    _stage,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
                 ],
               ],
             ),
