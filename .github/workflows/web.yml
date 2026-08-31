@@ -1,0 +1,66 @@
+name: Web reader build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "web_reader/**"
+      - ".github/workflows/web.yml"
+  pull_request:
+    paths:
+      - "web_reader/**"
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: web_reader
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      - name: Build wasm package
+        run: wasm-pack build --target web --out-dir pkg --release
+
+      - name: Assemble static site
+        run: |
+          mkdir -p dist
+          cp index.html style.css main.js dist/
+          cp -r pkg dist/pkg
+          rm -f dist/pkg/.gitignore
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lmf-web-reader
+          path: web_reader/dist
+          if-no-files-found: error
+
+  # Optional: publish dist/ to GitHub Pages. Requires Pages enabled
+  # for the repo (Settings -> Pages -> Source: GitHub Actions).
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: lmf-web-reader
+          path: dist
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - id: deployment
+        uses: actions/deploy-pages@v4

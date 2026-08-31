@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LMF</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main id="drop-zone">
+    <canvas id="canvas"></canvas>
+
+    <div id="empty-state">
+      <input type="file" id="file-input" accept=".lmf" hidden />
+      <button id="open-btn">Открыть файл</button>
+    </div>
+
+    <div id="error-banner" hidden>
+      <span id="error-text"></span>
+      <button id="error-close" aria-label="Закрыть">×</button>
+    </div>
+  </main>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>
