@@ -47,6 +47,9 @@ cd android_app
 flutter pub get
 flutter create --platforms=android --project-name lmf_app .   # один раз: добавляет android/
 rm -rf test   # шаблонный тест ссылается на MyApp/flutter_test, у нас его нет
+# file_picker тянет flutter_plugin_android_lifecycle, которому нужен
+# compileSdk/targetSdk 36 — если шаблон Flutter поставил меньше,
+# поднимите вручную в android/app/build.gradle.kts
 flutter run          # или flutter build apk
 ```
 

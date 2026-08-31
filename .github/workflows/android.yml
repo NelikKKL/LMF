@@ -39,6 +39,21 @@ jobs:
           flutter create --platforms=android --project-name lmf_app .
           rm -rf test
 
+      - name: Bump compileSdk/targetSdk to 36
+        run: |
+          for f in android/app/build.gradle.kts android/app/build.gradle; do
+            if [ -f "$f" ]; then
+              sed -i \
+                -e 's/compileSdk = flutter\.compileSdkVersion/compileSdk = 36/' \
+                -e 's/compileSdk flutter\.compileSdkVersion/compileSdk 36/' \
+                -e 's/compileSdkVersion flutter\.compileSdkVersion/compileSdkVersion 36/' \
+                -e 's/targetSdk = flutter\.targetSdkVersion/targetSdk = 36/' \
+                -e 's/targetSdk flutter\.targetSdkVersion/targetSdk 36/' \
+                -e 's/targetSdkVersion flutter\.targetSdkVersion/targetSdkVersion 36/' \
+                "$f"
+            fi
+          done
+
       - name: Analyze
         run: flutter analyze
 
