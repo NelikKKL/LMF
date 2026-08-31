@@ -34,8 +34,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final files = await FilePicker.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['png', 'jpg', 'jpeg', 'webp', 'bmp', 'gif', 'heic'],
-      allowMultiple: true,
-      withData: true,
     );
     if (files.isEmpty) return;
 
@@ -45,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() => _busy = true);
     try {
       final bytesList = <Uint8List>[
-        for (final f in sorted) f.bytes ?? await File(f.path!).readAsBytes(),
+        for (final f in sorted) await f.readAsBytes(),
       ];
       final lmfBytes = LmfCodec.encode(bytesList);
 
@@ -68,11 +66,10 @@ class _HomeScreenState extends State<HomeScreen> {
     final file = await FilePicker.pickFile(
       type: FileType.custom,
       allowedExtensions: ['lmf'],
-      withData: true,
     );
     if (file == null) return;
 
-    final bytes = file.bytes ?? await File(file.path!).readAsBytes();
+    final bytes = await file.readAsBytes();
 
     try {
       final decoded = LmfCodec.decode(bytes);
