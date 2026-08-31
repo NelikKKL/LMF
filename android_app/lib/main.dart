@@ -25,7 +25,6 @@ class LmfApp extends StatelessWidget {
           brightness: Brightness.dark,
         )).harmonized().copyWith(
               surface: const Color(0xFF121212),
-              background: const Color(0xFF121212),
             );
 
         return MaterialApp(
