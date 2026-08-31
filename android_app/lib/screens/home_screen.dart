@@ -31,21 +31,21 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _pack() async {
-    final result = await FilePicker.platform.pickFiles(
+    final files = await FilePicker.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['png', 'jpg', 'jpeg', 'webp', 'bmp', 'gif', 'heic'],
       allowMultiple: true,
       withData: true,
     );
-    if (result == null || result.files.isEmpty) return;
+    if (files.isEmpty) return;
 
-    final files = [...result.files];
-    files.sort((a, b) => _trailingNumber(a.name).compareTo(_trailingNumber(b.name)));
+    final sorted = [...files];
+    sorted.sort((a, b) => _trailingNumber(a.name).compareTo(_trailingNumber(b.name)));
 
     setState(() => _busy = true);
     try {
       final bytesList = <Uint8List>[
-        for (final f in files) f.bytes ?? await File(f.path!).readAsBytes(),
+        for (final f in sorted) f.bytes ?? await File(f.path!).readAsBytes(),
       ];
       final lmfBytes = LmfCodec.encode(bytesList);
 
@@ -54,7 +54,9 @@ class _HomeScreenState extends State<HomeScreen> {
       await outFile.writeAsBytes(lmfBytes);
 
       if (!mounted) return;
-      await Share.shareXFiles([XFile(outFile.path)]);
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(outFile.path)]),
+      );
     } catch (e) {
       if (mounted) _showError(e.toString());
     } finally {
@@ -63,14 +65,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _openReader() async {
-    final result = await FilePicker.platform.pickFiles(
+    final file = await FilePicker.pickFile(
       type: FileType.custom,
       allowedExtensions: ['lmf'],
       withData: true,
     );
-    if (result == null || result.files.isEmpty) return;
+    if (file == null) return;
 
-    final file = result.files.single;
     final bytes = file.bytes ?? await File(file.path!).readAsBytes();
 
     try {
