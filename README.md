@@ -49,7 +49,9 @@ flutter create --platforms=android --project-name lmf_app .   # один раз:
 rm -rf test   # шаблонный тест ссылается на MyApp/flutter_test, у нас его нет
 # file_picker тянет flutter_plugin_android_lifecycle, которому нужен
 # compileSdk/targetSdk 36 — если шаблон Flutter поставил меньше,
-# поднимите вручную в android/app/build.gradle.kts
+# поднимите вручную в android/app/build.gradle.kts. Также держите
+# сам file_picker на версии, собранной под compileSdk 36+ (см. pubspec.yaml) —
+# иначе Gradle упадёт на checkReleaseAarMetadata даже с compileSdk=36 в приложении.
 flutter run          # или flutter build apk
 ```
 
