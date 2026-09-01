@@ -1,0 +1,47 @@
+name: Image Scraper
+
+# Позволяет запускать экшен вручную
+on:
+  workflow_dispatch:
+    inputs:
+      gallery_url:
+        description: 'Введите ссылку на галерею (например, https://site.com/g/3601564/6519838fc7/)'
+        required: true
+        type: string
+
+jobs:
+  download-images:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Клонируем репозиторий, чтобы получить скрипт scraper.py
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # 2. Устанавливаем Python
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    # 3. Устанавливаем зависимости
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests beautifulsoup4 lxml
+
+    # 4. Запускаем наш скрипт и передаем ему ссылку, введенную юзером
+    - name: Run Scraper
+      run: |
+        python scraper.py "${{ github.event.inputs.gallery_url }}"
+
+    # 5. Упаковываем скачанные папки в ZIP-архив и выкладываем в артефакты
+    - name: Upload Images as Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: downloaded-images-archive
+        path: |
+          ./**/
+          !./.github/
+          !./.git/
+        retention-days: 5 # Архив будет храниться 5 дней
