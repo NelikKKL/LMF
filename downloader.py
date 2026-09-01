@@ -41,9 +41,11 @@ HEADERS = {
 # и относительные href="/s/..." и абсолютные href="https://domen.com/s/...")
 S_LINK_RE = re.compile(r'href="((?:https?://[^"]+)?/s/[^"]+)"')
 
-# прямые ссылки на .webp, любой домен
+# прямая ссылка на изображение: src="..." на любом сабдомене *.hath.network,
+# заканчивается на .webp. Сама поддомен-часть перед hath.network случайная,
+# поэтому фиксируем только домен верхнего уровня и расширение.
 IMG_LINK_RE = re.compile(
-    r'(https?://[^\s"\'<>]+?\.webp)',
+    r'src="(https?://[^"]+\.hath\.network/[^"]+\.webp)"',
     re.IGNORECASE,
 )
 
